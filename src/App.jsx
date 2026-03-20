@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload } from 'lucide-react';
+import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "./firebase";
 
 const ADMIN_CREDENTIALS = { username: 'shameem', password: 'shameem123#' };
 
@@ -396,22 +398,79 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
     setEditingEvent(null);
   };
 
-  const handleMemberPhotoUpload = (e) => {
+  const [uploadStatus, setUploadStatus] = useState({ active: false, progress: 0, type: '', error: null });
+
+  const uploadToFirebase = (file, folderPath) => {
+    return new Promise((resolve, reject) => {
+      setUploadStatus({ active: true, progress: 0, type: 'uploading', error: null });
+      const fileRef = ref(storage, `${folderPath}/${Date.now()}_${file.name}`);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      uploadTask.on('state_changed', 
+        (snapshot) => setUploadStatus(prev => ({ ...prev, progress: Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100) })),
+        (error) => {
+          setUploadStatus({ active: true, progress: 0, type: 'error', error: error.message });
+          setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 4000);
+          reject(error);
+        },
+        async () => {
+          setUploadStatus({ active: true, progress: 100, type: 'success', error: null });
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 2000);
+          resolve(downloadURL);
+        }
+      );
+    });
+  };
+
+  const handleMemberPhotoUpload = async (e) => {
     if (e.target.files.length > 0) {
-      setEditingMember({ ...editingMember, img: URL.createObjectURL(e.target.files[0]), imgScale: 1, imgPosX: 50, imgPosY: 50 });
+      try {
+        const url = await uploadToFirebase(e.target.files[0], 'members');
+        setEditingMember({ ...editingMember, img: url, imgScale: 1, imgPosX: 50, imgPosY: 50 });
+      } catch (err) { console.error(err); }
     }
   };
 
-  const handleCoverUpload = (e) => {
+  const handleCoverUpload = async (e) => {
     if (e.target.files.length > 0) {
-      setEditingEvent({ ...editingEvent, cover: URL.createObjectURL(e.target.files[0]) });
+      try {
+        const url = await uploadToFirebase(e.target.files[0], 'events/covers');
+        setEditingEvent({ ...editingEvent, cover: url });
+      } catch (err) { console.error(err); }
     }
   };
 
-  const handleGalleryUpload = (e) => {
+  const handleGalleryUpload = async (e) => {
     if (e.target.files.length > 0) {
-      const newImgs = Array.from(e.target.files).map(f => URL.createObjectURL(f));
-      setEditingEvent({ ...editingEvent, images: [...(editingEvent.images || []), ...newImgs] });
+      setUploadStatus({ active: true, progress: 0, type: 'uploading', error: null });
+      const newUrls = [];
+      const files = Array.from(e.target.files);
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const fileRef = ref(storage, `events/gallery/${Date.now()}_${files[i].name}`);
+          const uploadTask = uploadBytesResumable(fileRef, files[i]);
+          await new Promise((resolve, reject) => {
+            uploadTask.on('state_changed', 
+              (snapshot) => {
+                const totalProg = Math.round(((i + (snapshot.bytesTransferred / snapshot.totalBytes)) / files.length) * 100);
+                setUploadStatus(prev => ({ ...prev, progress: totalProg }));
+              },
+              reject,
+              async () => {
+                newUrls.push(await getDownloadURL(uploadTask.snapshot.ref));
+                resolve();
+              }
+            );
+          });
+        }
+        setEditingEvent({ ...editingEvent, images: [...(editingEvent.images || []), ...newUrls] });
+        setUploadStatus({ active: true, progress: 100, type: 'success', error: null });
+        setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 2000);
+      } catch (error) {
+        setUploadStatus({ active: true, progress: 0, type: 'error', error: error.message });
+        setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 4000);
+      }
     }
   };
 
@@ -424,7 +483,40 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
   if (!isAdmin) return <HomePage setCurrentPage={setCurrentPage} />;
 
   return (
-    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left mb-20 md:mb-32 animate-in fade-in duration-500">
+    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left mb-20 md:mb-32 animate-in fade-in duration-500 relative">
+      
+      {/* Uploading Status Overlay */}
+      {uploadStatus.active && (
+        <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200">
+          <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 text-center">
+            {uploadStatus.type === 'uploading' && (
+              <>
+                <Loader2 className="w-16 h-16 text-orange-500 animate-spin mb-6" />
+                <h3 className="text-2xl font-black text-gray-900 tracking-tight">Authenticating Upload...</h3>
+                <div className="w-full h-3 bg-gray-100 rounded-full mt-6 overflow-hidden">
+                  <div className="h-full bg-orange-500 rounded-full transition-all duration-300" style={{ width: `${uploadStatus.progress}%` }}></div>
+                </div>
+                <p className="text-gray-500 font-bold mt-3 tracking-widest text-xs uppercase">{uploadStatus.progress}% SECURED</p>
+              </>
+            )}
+            {uploadStatus.type === 'success' && (
+              <>
+                <CheckCircle2 className="w-20 h-20 text-green-500 mb-6 animate-in zoom-in" />
+                <h3 className="text-2xl font-black text-gray-900 tracking-tight">Verified & Saved</h3>
+                <p className="text-gray-500 font-bold mt-2">Asset is safely hosted on Cloud Storage.</p>
+              </>
+            )}
+            {uploadStatus.type === 'error' && (
+              <>
+                <AlertCircle className="w-16 h-16 text-red-500 mb-6" />
+                <h3 className="text-2xl font-black text-gray-900 tracking-tight">Transfer Failed</h3>
+                <p className="text-red-500 font-bold mt-2 text-sm">{uploadStatus.error}</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 md:mb-16">
         <h1 className="text-4xl md:text-5xl font-black text-gray-950 flex items-center gap-4 tracking-tight"> <Lock className="text-orange-500 w-10 h-10 bg-orange-50 p-2 rounded-xl" /> Stealth Gateway</h1>
         <button onClick={() => { setIsAdmin(false); setCurrentPage('home'); }} className="w-full sm:w-auto px-8 py-4 rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-gray-300 font-bold transition-all hover:shadow-lg">Exit Gateway</button>
