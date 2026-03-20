@@ -32,7 +32,7 @@ const RoaLogoSvg = ({ className = "w-10 h-10" }) => (
 
 const Header = ({ setCurrentPage, isAdmin }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navItems = ['Events', 'Members', 'About Us'];
+  const navItems = ['Home', 'Events', 'Members', 'About Us'];
   if (isAdmin) navItems.push('Admin');
 
   const handleNav = (page) => {
