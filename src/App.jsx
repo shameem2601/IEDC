@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload } from 'lucide-react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const ADMIN_CREDENTIALS = { username: 'shameem', password: 'shameem123#' };
 
@@ -694,6 +695,7 @@ export default function App() {
       </div>
       <Footer setCurrentPage={setCurrentPage} setShowLogin={setShowLogin} />
       {showLogin && <AdminLogin onClose={() => setShowLogin(false)} onLogin={handleAdminAuth} />}
+      <SpeedInsights />
     </div>
   );
 }
