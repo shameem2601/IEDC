@@ -40,9 +40,10 @@ const RoaLogoSvg = ({ className = "w-10 h-10" }) => (
   </svg>
 );
 
-const Header = ({ setCurrentPage }) => {
+const Header = ({ setCurrentPage, isAdmin }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navItems = ['Home', 'Events', 'Members', 'About Us'];
+  if (isAdmin) navItems.push('Admin');
 
   const handleNav = (page) => {
     setCurrentPage(page === 'about us' ? 'about' : page);
@@ -771,7 +772,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen font-sans bg-[#FDFDFD] text-gray-900 scroll-smooth selection:bg-orange-200 selection:text-orange-900 flex flex-col">
-      <Header setCurrentPage={setCurrentPage} />
+      <Header setCurrentPage={setCurrentPage} isAdmin={isAdmin} />
       <div className="flex-1 w-full">
         {renderPage()}
       </div>
