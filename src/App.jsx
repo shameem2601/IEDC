@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload, Loader2, CheckCircle2, AlertCircle, Rocket, Zap } from 'lucide-react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
@@ -22,20 +22,6 @@ const initialEvents = [
   { id: 2, title: "Event: Glass Summit 2024", date: "May 16, 2024", desc: "A symposium on the integration of aesthetic design and robust engineering.", cover: null, images: [] },
   { id: 3, title: "EDC Hackathon: dynamic Stroke", date: "Apr 12, 2024", desc: "A intense coding competition centered on dynamic scaling.", cover: null, images: [] },
 ];
-
-const FeatureIcon1 = () => (
-  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="60" height="60" rx="10" fill="#F0F0F0"/>
-    <rect x="20" y="20" width="20" height="20" rx="2" fill="#666"/>
-  </svg>
-);
-
-const FeatureIcon2 = () => (
-  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="60" height="60" rx="10" fill="#F0F0F0"/>
-    <circle cx="30" cy="30" r="10" fill="#999"/>
-  </svg>
-);
 
 const RoaLogoSvg = ({ className = "w-10 h-10" }) => (
   <svg className={className} viewBox="0 -145 200 205" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -173,7 +159,7 @@ const HomePage = ({ setCurrentPage }) => (
   <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-center animate-in fade-in duration-500">
     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-950 max-w-[1000px] mx-auto leading-[1.1] tracking-tight"> 
       Innovation and Enterprise<br className="hidden sm:block" />
-      <span className="text-orange-500">Development Center of MTM College</span>
+      <span className="text-gray-400">Development Center of MTM College</span>
     </h1>
     <p className="mt-8 md:mt-10 text-lg sm:text-xl md:text-2xl text-gray-600 max-w-[750px] mx-auto leading-relaxed font-medium"> 
       Join a vibrant community dedicated to fostering innovation. Experience resources, mentorship, and opportunities designed to accelerate your growth. 
@@ -184,9 +170,11 @@ const HomePage = ({ setCurrentPage }) => (
     </div>
     
     <div className="mt-24 md:mt-40 mb-20 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-left">
-      {[ {icon: FeatureIcon1, title: 'Accelerate growth.', text: 'Join a vibrant network of passionate creators and innovators. Gain real guidance, explore new opportunities, and develop lasting connections.'}, {icon: FeatureIcon2, title: 'Unlock potential.', text: 'Access exclusive events, mentorship, and resources that empower your entrepreneurial journey. Be part of a community that supports your ambitions.'} ].map((f, i) => (
+      {[ {icon: Rocket, title: 'Accelerate growth.', text: 'Join a vibrant network of passionate creators and innovators. Gain real guidance, explore new opportunities, and develop lasting connections.'}, {icon: Zap, title: 'Unlock potential.', text: 'Access exclusive events, mentorship, and resources that empower your entrepreneurial journey. Be part of a community that supports your ambitions.'} ].map((f, i) => (
         <div key={i} className="p-8 md:p-12 bg-white/50 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/20 backdrop-blur-sm transition-all hover:shadow-2xl hover:-translate-y-2">
-          <f.icon />
+          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-800 shadow-sm border border-gray-200 hover:scale-110 transition-transform">
+             <f.icon size={32} strokeWidth={2.5} />
+          </div>
           <h3 className="mt-8 text-2xl md:text-3xl font-black text-gray-950 tracking-tight">{f.title}</h3>
           <p className="mt-4 text-gray-600 leading-relaxed text-base md:text-lg font-medium">{f.text}</p>
         </div>
