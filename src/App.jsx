@@ -24,24 +24,15 @@ const initialEvents = [
   { id: 3, title: "EDC Hackathon: dynamic Stroke", date: "Apr 12, 2024", desc: "A intense coding competition centered on dynamic scaling.", cover: null, images: [] },
 ];
 
+import logoImg from './assets/logo.png';
+
 const RoaLogoSvg = ({ className = "w-10 h-10" }) => (
-  <svg className={className} viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M42 2L15 29H27L54 2H42Z" fill="#F48B5F"/>
-    <path d="M63 2L42 23V35L75 2H63Z" fill="#F48B5F"/>
-    <path d="M84 2L63 23V35L96 2H84Z" fill="#F48B5F"/>
-    <path d="M51 32L6 77H18L63 32H51Z" fill="#ED3F6E"/>
-    <path d="M72 32L42 62V74L84 32H72Z" fill="#ED3F6E"/>
-    <path d="M54 62L39 77H51L66 62H54Z" fill="#5A4596"/>
-    <path d="M24 66L13 77H25L36 66H24Z" fill="#ED3F6E"/>
-    <circle cx="9" cy="29" r="6" fill="#F48B5F"/>
-    <circle cx="30" cy="50" r="6" fill="#ED3F6E"/>
-    <circle cx="51" cy="71" r="6" fill="#5A4596"/>
-  </svg>
+  <img src={logoImg} className={`${className} object-contain hover:scale-105 transition-transform`} alt="IEDC Logo" />
 );
 
 const Header = ({ setCurrentPage, isAdmin }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navItems = ['Home', 'Events', 'Members', 'About Us'];
+  const navItems = ['Events', 'Members', 'About Us'];
   if (isAdmin) navItems.push('Admin');
 
   const handleNav = (page) => {
@@ -51,7 +42,7 @@ const Header = ({ setCurrentPage, isAdmin }) => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-white/20 py-4 shadow-sm px-6 md:px-12">
-      <div className="flex items-center justify-between max-w-[1200px] mx-auto w-full">
+      <div className="flex items-center justify-between w-full">
         <div className="cursor-pointer flex items-center gap-3 hover:opacity-80 transition-opacity" onClick={() => handleNav('home')}>
           <RoaLogoSvg className="w-12 h-12 md:w-14 md:h-14" />
         </div>
@@ -86,7 +77,9 @@ const Footer = ({ setCurrentPage, setShowLogin }) => (
   <footer className="mt-20 md:mt-32 border-t border-gray-100 bg-white pt-16 pb-8 px-6 md:px-12 relative text-sm">
     <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-12">
       <div className="flex flex-col items-center md:items-start gap-6">
-        <RoaLogoSvg className="w-16 h-16 md:w-20 md:h-20" />
+        <div className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setCurrentPage('home')}>
+          <RoaLogoSvg className="w-16 h-16 md:w-20 md:h-20" />
+        </div>
         <p className="text-gray-400 font-medium">© 2026 IEDC MTM. All Rights Reserved.</p>
       </div>
 
