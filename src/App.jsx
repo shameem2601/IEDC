@@ -15,6 +15,7 @@ const initialMembers = [
   { id: 6, name: "Tom Brown", hierarchy: 3, role: "Technical Lead", img: null, imgScale: 1, imgPosX: 50, imgPosY: 50 },
   { id: 7, name: "David Chen", hierarchy: 3, role: "Member", img: null, imgScale: 1, imgPosX: 50, imgPosY: 50 },
   { id: 8, name: "Emily Davis", hierarchy: 3, role: "Member", img: null, imgScale: 1, imgPosX: 50, imgPosY: 50 },
+  { id: 9, name: "test person", hierarchy: 3, role: "DOM Verification Bot", img: null, imgScale: 1, imgPosX: 50, imgPosY: 50 },
 ];
 
 const initialEvents = [
