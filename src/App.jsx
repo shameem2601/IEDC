@@ -25,18 +25,17 @@ const initialEvents = [
 ];
 
 const RoaLogoSvg = ({ className = "w-10 h-10" }) => (
-  <svg className={className} viewBox="0 -145 200 205" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g transform="rotate(-45)">
-      <rect x="0" y="0" width="20" height="20" fill="#F48B5F"/>
-      <rect x="60" y="0" width="20" height="20" fill="#F48B5F"/>
-      <rect x="120" y="0" width="80" height="20" fill="#F48B5F"/>
-      <rect x="0" y="30" width="20" height="20" fill="#ED3F6E"/>
-      <rect x="60" y="30" width="80" height="20" fill="#ED3F6E"/>
-      <rect x="180" y="30" width="20" height="20" fill="#ED3F6E"/>
-      <rect x="0" y="60" width="80" height="20" fill="#5A4596"/>
-      <rect x="120" y="60" width="20" height="20" fill="#5A4596"/>
-      <rect x="180" y="60" width="20" height="20" fill="#5A4596"/>
-    </g>
+  <svg className={className} viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M42 2L15 29H27L54 2H42Z" fill="#F48B5F"/>
+    <path d="M63 2L42 23V35L75 2H63Z" fill="#F48B5F"/>
+    <path d="M84 2L63 23V35L96 2H84Z" fill="#F48B5F"/>
+    <path d="M51 32L6 77H18L63 32H51Z" fill="#ED3F6E"/>
+    <path d="M72 32L42 62V74L84 32H72Z" fill="#ED3F6E"/>
+    <path d="M54 62L39 77H51L66 62H54Z" fill="#5A4596"/>
+    <path d="M24 66L13 77H25L36 66H24Z" fill="#ED3F6E"/>
+    <circle cx="9" cy="29" r="6" fill="#F48B5F"/>
+    <circle cx="30" cy="50" r="6" fill="#ED3F6E"/>
+    <circle cx="51" cy="71" r="6" fill="#5A4596"/>
   </svg>
 );
 
