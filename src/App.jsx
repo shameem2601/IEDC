@@ -169,8 +169,9 @@ const AdminLogin = ({ onClose, onLogin }) => {
 
 const HomePage = ({ setCurrentPage }) => (
   <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-center animate-in fade-in duration-500">
-    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-gray-950 max-w-[950px] mx-auto leading-[1.05] tracking-tight"> 
-      Empowering Innovation.<br className="hidden sm:block" /><span className="text-gray-400">Building Entrepreneurs.</span> 
+    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-950 max-w-[1000px] mx-auto leading-[1.1] tracking-tight"> 
+      Innovation and Enterprise<br className="hidden sm:block" />
+      <span className="text-orange-500">Development Center of MTM College</span>
     </h1>
     <p className="mt-8 md:mt-10 text-lg sm:text-xl md:text-2xl text-gray-600 max-w-[750px] mx-auto leading-relaxed font-medium"> 
       Join a vibrant community dedicated to fostering innovation. Experience resources, mentorship, and opportunities designed to accelerate your growth. 
