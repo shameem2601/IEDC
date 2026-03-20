@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload, Loader2, CheckCircle2, AlertCircle, Rocket, Zap } from 'lucide-react';
+import { Lock, Linkedin, Instagram, Twitter, MoveUp, MoveDown, Trash2, Edit2, Plus, GripVertical, Menu, X, Image as ImageIcon, ChevronDown, ChevronUp, Upload, Loader2, CheckCircle2, AlertCircle, TrendingUp, Unlock } from 'lucide-react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
@@ -159,7 +159,7 @@ const HomePage = ({ setCurrentPage }) => (
   <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-center animate-in fade-in duration-500">
     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-gray-950 max-w-[1000px] mx-auto leading-[1.1] tracking-tight"> 
       Innovation and Enterprise<br className="hidden sm:block" />
-      <span className="text-gray-400">Development Center of MTM College</span>
+      Development Center of MTM College
     </h1>
     <p className="mt-8 md:mt-10 text-lg sm:text-xl md:text-2xl text-gray-600 max-w-[750px] mx-auto leading-relaxed font-medium"> 
       Join a vibrant community dedicated to fostering innovation. Experience resources, mentorship, and opportunities designed to accelerate your growth. 
@@ -170,7 +170,7 @@ const HomePage = ({ setCurrentPage }) => (
     </div>
     
     <div className="mt-24 md:mt-40 mb-20 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-left">
-      {[ {icon: Rocket, title: 'Accelerate growth.', text: 'Join a vibrant network of passionate creators and innovators. Gain real guidance, explore new opportunities, and develop lasting connections.'}, {icon: Zap, title: 'Unlock potential.', text: 'Access exclusive events, mentorship, and resources that empower your entrepreneurial journey. Be part of a community that supports your ambitions.'} ].map((f, i) => (
+      {[ {icon: TrendingUp, title: 'Accelerate growth.', text: 'Join a vibrant network of passionate creators and innovators. Gain real guidance, explore new opportunities, and develop lasting connections.'}, {icon: Unlock, title: 'Unlock potential.', text: 'Access exclusive events, mentorship, and resources that empower your entrepreneurial journey. Be part of a community that supports your ambitions.'} ].map((f, i) => (
         <div key={i} className="p-8 md:p-12 bg-white/50 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/20 backdrop-blur-sm transition-all hover:shadow-2xl hover:-translate-y-2">
           <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-800 shadow-sm border border-gray-200 hover:scale-110 transition-transform">
              <f.icon size={32} strokeWidth={2.5} />
