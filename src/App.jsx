@@ -135,7 +135,7 @@ const AdminLogin = ({ onClose, onLogin }) => {
       <div className="bg-white/95 rounded-[2rem] p-6 sm:p-12 w-full max-w-lg shadow-2xl border border-white/20 animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-4 mb-8">
           <div className="p-4 bg-gray-100/80 rounded-2xl"><Lock size={24} className="text-gray-800" /></div>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">Admin Gateway</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-gray-950 tracking-tight">Admin Panel</h2>
         </div>
         {error && <p className="text-red-600 mb-6 bg-red-50 font-semibold p-4 rounded-xl text-sm border border-red-100">{error}</p>}
         <div className="space-y-5">
@@ -470,6 +470,42 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
     setEditingEvent({ ...editingEvent, images: updatedImages });
   };
 
+  const handleBulkMemberUpload = async (e) => {
+    if (e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      setUploadStatus({ active: true, progress: 0, type: 'uploading', error: null });
+      let completedCount = 0;
+      
+      try {
+        const uploadPromises = files.map(async (file, idx) => {
+          const fileRef = ref(storage, `members/${Date.now()}_${file.name}`);
+          await uploadBytesResumable(fileRef, file);
+          const url = await getDownloadURL(fileRef);
+          completedCount++;
+          setUploadStatus(prev => ({ ...prev, progress: Math.round((completedCount / files.length) * 100) }));
+          return {
+            id: Date.now() + idx,
+            name: "New Member",
+            hierarchy: 3,
+            role: "TBD",
+            img: url,
+            imgScale: 1,
+            imgPosX: 50,
+            imgPosY: 50
+          };
+        });
+
+        const results = await Promise.all(uploadPromises);
+        setMembers(prev => [...prev, ...results]);
+        setUploadStatus({ active: true, progress: 100, type: 'success', error: null });
+        setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 2000);
+      } catch (err) {
+        setUploadStatus({ active: true, progress: 0, type: 'error', error: err.message });
+        setTimeout(() => setUploadStatus({ active: false, progress: 0, type: '', error: null }), 4000);
+      }
+    }
+  };
+
   if (!isAdmin) return <HomePage setCurrentPage={setCurrentPage} />;
 
   return (
@@ -508,8 +544,8 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
       )}
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 md:mb-16">
-        <h1 className="text-4xl md:text-5xl font-black text-gray-950 flex items-center gap-4 tracking-tight"> <Lock className="text-orange-500 w-10 h-10 bg-orange-50 p-2 rounded-xl" /> Stealth Gateway</h1>
-        <button onClick={() => { setIsAdmin(false); setCurrentPage('home'); }} className="w-full sm:w-auto px-8 py-4 rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-gray-300 font-bold transition-all hover:shadow-lg">Exit Gateway</button>
+        <h1 className="text-4xl md:text-5xl font-black text-gray-950 flex items-center gap-4 tracking-tight"> <Lock className="text-orange-500 w-10 h-10 bg-orange-50 p-2 rounded-xl" /> Admin Panel</h1>
+        <button onClick={() => { setIsAdmin(false); setCurrentPage('home'); }} className="w-full sm:w-auto px-8 py-4 rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-gray-300 font-bold transition-all hover:shadow-lg">Exit Panel</button>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-10 pb-2">
@@ -524,7 +560,14 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
               <h2 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Hierarchy Management</h2>
               <p className="text-gray-500 font-medium mt-1">Control member organization and priority scaling.</p>
             </div>
-            <button onClick={() => setEditingMember({...newMember})} className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold bg-orange-500 hover:bg-orange-600 transition-all hover:scale-105 shadow-xl shadow-orange-500/20"> <Plus size={20} /> Add Member </button>
+            <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+              <label className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-gray-700 font-bold bg-white border-2 border-gray-100 hover:border-gray-300 cursor-pointer transition-all hover:shadow-md">
+                <Upload size={20} className="text-orange-500" />
+                Bulk Import
+                <input type="file" multiple accept="image/*" className="hidden" onChange={handleBulkMemberUpload} />
+              </label>
+              <button onClick={() => setEditingMember({...newMember})} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold bg-orange-500 hover:bg-orange-600 transition-all hover:scale-105 shadow-xl shadow-orange-500/20"> <Plus size={20} /> Add Member </button>
+            </div>
           </div>
 
           <div className="space-y-4">
