@@ -60,29 +60,29 @@ const Header = ({ setCurrentPage }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-white/20 px-4 sm:px-6 py-4 shadow-sm">
-      <div className="flex items-center justify-between max-w-[1400px] mx-auto">
-        <div className="cursor-pointer hover:scale-105 transition-transform" onClick={() => handleNav('home')}>
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-white/20 py-4 shadow-sm px-6 md:px-12">
+      <div className="flex items-center justify-between max-w-[1200px] mx-auto w-full">
+        <div className="cursor-pointer flex items-center gap-3 hover:opacity-80 transition-opacity" onClick={() => handleNav('home')}>
           <RoaLogoSvg />
         </div>
         
-        <nav className="hidden md:flex items-center gap-8 font-semibold text-sm text-gray-700">
+        <nav className="hidden md:flex items-center gap-8 font-bold text-sm text-gray-500">
           {navItems.map(page => (
-            <button key={page} onClick={() => handleNav(page.toLowerCase())} className={`hover:text-black transition-colors ${page === 'About Us' ? 'px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800' : ''}`}>
+            <button key={page} onClick={() => handleNav(page.toLowerCase())} className={`hover:text-black transition-colors ${page === 'About Us' ? 'px-6 py-2.5 bg-black text-white rounded-full hover:bg-gray-800' : ''}`}>
               {page}
             </button>
           ))}
         </nav>
 
-        <button className="md:hidden p-2 text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <button className="md:hidden p-2 text-gray-900" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {isMenuOpen && (
-        <nav className="mt-4 md:hidden flex flex-col gap-2 font-bold text-base text-gray-700 bg-white/95 rounded-2xl p-4 shadow-xl border border-gray-100 backdrop-blur-xl">
+        <nav className="mt-4 md:hidden flex flex-col gap-2 font-bold text-base text-gray-700 bg-white/95 rounded-2xl p-6 shadow-xl border border-gray-100 backdrop-blur-xl absolute left-6 right-6">
           {navItems.map(page => (
-            <button key={page} onClick={() => handleNav(page.toLowerCase())} className={`text-left w-full py-3 px-4 rounded-xl hover:bg-gray-50 ${page === 'About Us' ? 'bg-black text-white hover:bg-gray-900 mt-2 text-center' : ''}`}>
+            <button key={page} onClick={() => handleNav(page.toLowerCase())} className={`text-left w-full py-4 px-4 rounded-xl hover:bg-gray-50 ${page === 'About Us' ? 'bg-black text-white hover:bg-gray-900 mt-2 text-center' : ''}`}>
               {page}
             </button>
           ))}
@@ -93,51 +93,36 @@ const Header = ({ setCurrentPage }) => {
 };
 
 const Footer = ({ setCurrentPage, setShowLogin }) => (
-  <footer className="mt-12 md:mt-32 px-6 md:px-12 py-16 md:py-24 border-t border-gray-100 text-sm text-gray-600 bg-white/50 rounded-t-3xl backdrop-blur-xl relative">
-    <button onClick={() => setShowLogin(true)} className="absolute bottom-4 right-4 sm:bottom-8 sm:right-8 opacity-20 hover:opacity-100 transition-opacity p-3 rounded-xl bg-gray-100 z-10 hover:bg-gray-200">
-      <Lock size={18} />
-    </button>
-
-    <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between gap-12 md:gap-16 items-start">
-      <div className="flex flex-col gap-6 md:max-w-md">
-        <div className="flex items-center gap-4">
-          <RoaLogoSvg />
-          <h2 className="text-3xl font-black tracking-tight text-gray-950">IEDC Incubator</h2>
-        </div>
-        <p className="text-gray-500 leading-relaxed font-medium text-base">Empowering innovation and building tomorrow's entrepreneurs. We provide the ecosystem and support required to transform visionary ideas into sustainable startups.</p>
-        <p className="text-xs text-gray-400 mt-4">© 2024–2026 IEDC MTM.<br/>All Rights Reserved</p>
+  <footer className="mt-20 md:mt-32 border-t border-gray-100 bg-white pt-16 pb-8 px-6 md:px-12 relative text-sm">
+    <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center md:items-start gap-12">
+      <div className="flex flex-col items-center md:items-start gap-6">
+        <RoaLogoSvg />
+        <p className="text-gray-400 font-medium">© 2026 IEDC MTM. All Rights Reserved.</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-12 sm:gap-24 md:ml-auto">
-        <div className="flex flex-col gap-4">
-          <h4 className="font-extrabold text-gray-950 text-lg">Navigate</h4>
-          <div className="flex flex-col gap-3 font-semibold text-base text-gray-600">
-            {[ 'Home', 'Events', 'Members', 'About' ].map(page => (
-              <button key={page} onClick={() => setCurrentPage(page.toLowerCase())} className="text-left hover:text-black transition-colors w-fit group">
-                <span className="border-b-2 border-transparent group-hover:border-black pb-0.5 transition-all capitalize">{page}</span>
-              </button>
-            ))}
-          </div>
+      <div className="flex flex-col items-center md:items-end gap-10">
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-10 font-bold text-gray-500 text-sm">
+          {['Home', 'Events', 'Members', 'About'].map(page => (
+             <button key={page} onClick={() => setCurrentPage(page.toLowerCase())} className="hover:text-black transition-colors uppercase tracking-widest">{page}</button>
+          ))}
         </div>
-        <div className="flex flex-col gap-4">
-          <h4 className="font-extrabold text-gray-950 text-lg">Connect With Us</h4>
-          <div className="flex flex-col gap-3 font-semibold text-gray-600">
-            {[ 
-              {name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/iedcmtm/'}, 
-              {name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/in/iedc-mtm-aa58a03b5'}, 
-              {name: 'X', icon: Twitter, url: 'https://x.com/IedcMtm'} 
-            ].map(link => (
-              <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-black transition-colors group">
-                <div className="p-2.5 rounded-xl bg-gray-50 group-hover:bg-gray-100 group-hover:scale-110 transition-all border border-gray-100">
-                  <link.icon size={18} className="text-gray-500 group-hover:text-black" />
-                </div>
-                {link.name}
-              </a>
-            ))}
-          </div>
+        <div className="flex items-center gap-4">
+          {[ 
+            {name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/iedcmtm/'}, 
+            {name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/in/iedc-mtm-aa58a03b5'}, 
+            {name: 'X', icon: Twitter, url: 'https://x.com/IedcMtm'} 
+          ].map(link => (
+            <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 hover:-translate-y-1 transition-all text-gray-500 hover:text-black shadow-sm">
+               <link.icon size={20} />
+            </a>
+          ))}
         </div>
       </div>
     </div>
+    
+    <button onClick={() => setShowLogin(true)} className="absolute bottom-8 right-6 md:right-12 opacity-0 hover:opacity-100 transition-opacity p-3 z-10">
+      <Lock size={16} className="text-gray-300"/>
+    </button>
   </footer>
 );
 
@@ -182,18 +167,25 @@ const AdminLogin = ({ onClose, onLogin }) => {
 };
 
 const HomePage = ({ setCurrentPage }) => (
-  <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-4 sm:px-6 text-center animate-in fade-in duration-500">
-    <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-950 max-w-[850px] mx-auto leading-[1.1] tracking-tight"> Empowering Innovation. <br className="hidden sm:block" /><span className="text-gray-400">Building Entrepreneurs.</span> </h1>
-    <p className="mt-6 md:mt-10 text-lg md:text-xl text-gray-600 max-w-[650px] mx-auto leading-relaxed font-medium"> Join our vibrant community dedicated to fostering innovation and entrepreneurship. Experience resources, mentorship, and opportunities designed to accelerate your growth. </p>
-    <div className="mt-10 md:mt-14 flex flex-col sm:flex-row gap-5 justify-center">
-      <button onClick={() => setCurrentPage('events')} className="px-10 py-4 sm:py-5 bg-black text-white rounded-full text-sm font-bold hover:bg-gray-800 hover:scale-105 transition-all shadow-xl shadow-black/10">View Events</button>
-      <button onClick={() => setCurrentPage('members')} className="px-10 py-4 sm:py-5 bg-white border-2 border-gray-100 text-gray-800 rounded-full text-sm font-bold hover:bg-gray-50 hover:border-gray-200 transition-all">Explore Members</button>
+  <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left animate-in fade-in duration-500">
+    <div className="max-w-4xl">
+      <h1 className="text-5xl sm:text-6xl md:text-[5.5rem] font-black text-gray-950 leading-[1.05] tracking-tight"> 
+        Empowering Innovation.<br/><span className="text-gray-400">Building Entrepreneurs.</span> 
+      </h1>
+      <p className="mt-8 text-lg sm:text-xl text-gray-600 max-w-2xl leading-relaxed font-medium"> 
+        Join our vibrant community dedicated to fostering innovation and entrepreneurship. Experience resources, mentorship, and opportunities designed to accelerate your growth. 
+      </p>
+      <div className="mt-10 md:mt-12 flex flex-col sm:flex-row items-start gap-4">
+        <button onClick={() => setCurrentPage('events')} className="w-full sm:w-auto px-8 py-4 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">View Events</button>
+        <button onClick={() => setCurrentPage('members')} className="w-full sm:w-auto px-8 py-4 bg-white border-2 border-gray-200 text-gray-800 rounded-full font-bold hover:border-gray-300 hover:bg-gray-50 transition-all">Explore Members</button>
+      </div>
     </div>
-    <div className="mt-24 md:mt-32 mb-20 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-left">
+    
+    <div className="mt-32 md:mt-40 mb-20 md:mb-32 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
       {[ {icon: FeatureIcon1, title: 'Accelerate growth.', text: 'Join a vibrant network of passionate creators and innovators. Gain real guidance, explore new opportunities, and develop lasting connections.'}, {icon: FeatureIcon2, title: 'Unlock potential.', text: 'Access exclusive events, mentorship, and resources that empower your entrepreneurial journey. Be part of a community that supports your ambitions.'} ].map((f, i) => (
-        <div key={i} className="p-8 md:p-12 bg-white/50 rounded-[2.5rem] border border-gray-100/50 shadow-xl shadow-gray-200/20 backdrop-blur-sm transition-all hover:shadow-2xl hover:shadow-gray-200/40">
+        <div key={i} className="p-8 md:p-12 bg-white/50 rounded-[2rem] border border-gray-100 shadow-xl shadow-gray-200/20 backdrop-blur-sm transition-all hover:shadow-2xl hover:-translate-y-2">
           <f.icon />
-          <h3 className="mt-8 text-2xl md:text-3xl font-bold text-gray-950 tracking-tight">{f.title}</h3>
+          <h3 className="mt-8 text-2xl md:text-3xl font-black text-gray-950 tracking-tight">{f.title}</h3>
           <p className="mt-4 text-gray-600 leading-relaxed text-base font-medium">{f.text}</p>
         </div>
       ))}
@@ -205,7 +197,7 @@ const EventsPage = ({ events }) => {
   const [expandedEvent, setExpandedEvent] = useState(null);
 
   return (
-    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-4 sm:px-6 text-left animate-in fade-in duration-500">
+    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left animate-in fade-in duration-500">
       <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-950 tracking-tight">Events <span className="text-gray-300">Hub</span></h1>
       <p className="mt-4 md:mt-6 text-xl md:text-2xl text-gray-500 font-medium">Experience EDC's dynamic happenings.</p>
       
@@ -285,9 +277,9 @@ const MembersPage = ({ members }) => {
   };
 
   return (
-    <main className="max-w-[1400px] mx-auto pt-32 md:pt-48 px-4 sm:px-6 text-center animate-in fade-in duration-500 mb-20 md:mb-32">
+    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-center animate-in fade-in duration-500 mb-20 md:mb-32">
       <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-950 mb-6 tracking-tight">Our <span className="text-orange-500">Members</span></h1>
-      <p className="text-lg text-gray-500 font-medium mb-16 md:mb-24 max-w-2xl mx-auto">The brilliant minds driving innovation and shaping the future at IEDC Incubator.</p>
+      <p className="text-lg md:text-xl text-gray-500 font-medium mb-16 md:mb-24 max-w-2xl mx-auto">The brilliant minds driving innovation and shaping the future at IEDC Incubator.</p>
       
       {sortedHierarchies.length === 0 ? (
          <div className="py-20 text-gray-400 font-medium">No members found.</div>
@@ -327,10 +319,10 @@ const MembersPage = ({ members }) => {
 };
 
 const AboutPage = () => (
-  <main className="max-w-[1000px] mx-auto pt-32 md:pt-48 px-4 sm:px-6 text-left animate-in fade-in duration-500 mb-20 md:mb-32">
+  <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left animate-in fade-in duration-500 mb-20 md:mb-32">
     <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-950 tracking-tight mb-12">About <span className="text-orange-500">IEDC</span></h1>
     
-    <div className="space-y-12">
+    <div className="max-w-4xl space-y-12">
       <section>
         <p className="text-lg md:text-xl text-gray-600 leading-relaxed font-medium">
           The Innovation and Entrepreneurship Development Centre (IEDC) of MTM Arts, Science and Commerce College, Veliyancode, is a dynamic initiative dedicated to nurturing a culture of innovation.
@@ -340,29 +332,29 @@ const AboutPage = () => (
         </p>
       </section>
 
-      <section className="bg-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-orange-100 mt-16">
+      <section className="bg-orange-50 rounded-[2.5rem] p-8 md:p-12 border border-orange-100 mt-16 shadow-lg shadow-orange-500/5">
         <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-6">Our Vision</h3>
-        <p className="text-lg text-gray-700 leading-relaxed font-medium">
+        <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-medium">
           To build an active ecosystem that seamlessly bridges academia with real-world industry demands. We envision a future where students don't just consume knowledge, but actively design the solutions that will drive technological and social progress.
         </p>
       </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mt-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mt-16">
         <section>
           <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 border-b-2 border-gray-100 pb-4">Our Mission</h3>
-          <ul className="space-y-4 text-lg text-gray-600 font-medium">
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Facilitate hands-on technological literacy.</li>
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Provide early-stage startup incubation and mentorship.</li>
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Partner with strategic industry leaders to validate concepts.</li>
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Cultivate a collaborative, inter-disciplinary community.</li>
+          <ul className="space-y-4 text-base md:text-lg text-gray-600 font-medium">
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Facilitate hands-on technological literacy.</li>
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Provide early-stage startup incubation and mentorship.</li>
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Partner with strategic industry leaders to validate concepts.</li>
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-orange-500 mt-2.5 shrink-0" /> Cultivate a collaborative, inter-disciplinary community.</li>
           </ul>
         </section>
         <section>
           <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-6 border-b-2 border-gray-100 pb-4">Core Values</h3>
-          <ul className="space-y-4 text-lg text-gray-600 font-medium">
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <strong className="text-gray-900">Innovation First:</strong> Prioritizing creative and untested ideas over safe standards.</li>
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <strong className="text-gray-900">Resilience:</strong> Fostering an environment where experimentation is celebrated.</li>
-            <li className="flex gap-3"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <strong className="text-gray-900">Community:</strong> Operating under the belief that great things are built together.</li>
+          <ul className="space-y-4 text-base md:text-lg text-gray-600 font-medium">
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <div><strong className="text-gray-900">Innovation First:</strong> Prioritizing creative and untested ideas over safe standards.</div></li>
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <div><strong className="text-gray-900">Resilience:</strong> Fostering an environment where experimentation is celebrated.</div></li>
+            <li className="flex gap-3 items-start"><div className="w-2 h-2 rounded-full bg-black mt-2.5 shrink-0" /> <div><strong className="text-gray-900">Community:</strong> Operating under the belief that great things are built together.</div></li>
           </ul>
         </section>
       </div>
@@ -432,7 +424,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
   if (!isAdmin) return <HomePage setCurrentPage={setCurrentPage} />;
 
   return (
-    <main className="max-w-[1400px] mx-auto pt-32 md:pt-48 px-4 sm:px-6 text-left mb-20 md:mb-32 animate-in fade-in duration-500">
+    <main className="max-w-[1200px] mx-auto pt-32 md:pt-48 px-6 md:px-12 text-left mb-20 md:mb-32 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-10 md:mb-16">
         <h1 className="text-4xl md:text-5xl font-black text-gray-950 flex items-center gap-4 tracking-tight"> <Lock className="text-orange-500 w-10 h-10 bg-orange-50 p-2 rounded-xl" /> Stealth Gateway</h1>
         <button onClick={() => { setIsAdmin(false); setCurrentPage('home'); }} className="w-full sm:w-auto px-8 py-4 rounded-xl text-gray-700 bg-white border-2 border-gray-100 hover:border-gray-300 font-bold transition-all hover:shadow-lg">Exit Gateway</button>
