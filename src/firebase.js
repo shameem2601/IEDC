@@ -19,3 +19,5 @@ isSupported().then(supported => {
     analytics = getAnalytics(app);
   }
 });
+
+export const storage = getStorage(app);
