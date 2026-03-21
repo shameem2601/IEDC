@@ -312,7 +312,6 @@ const MembersPage = ({ members }) => {
                                         )}
                                     </div>
                                     <h4 className={`${nameClass} font-bold text-gray-950 leading-tight`}>{member.name}</h4>
-                                    <p className="text-sm text-orange-600 font-semibold mt-1">{member.role}</p>
                                     <p className="text-xs text-gray-500 font-medium mt-0.5">{member.position}</p>
                                 </div>
                             ))}
