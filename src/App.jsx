@@ -31,7 +31,16 @@ const Header = ({ setCurrentPage, isAdmin }) => {
     const handleNav = (page) => {
         setCurrentPage(page);
         setIsMenuOpen(false);
-        window.scrollTo(0,0);
+        if (window.innerWidth < 768 && page !== 'admin') {
+            setTimeout(() => {
+                const el = document.getElementById(page);
+                if (el) {
+                    window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+                }
+            }, 50);
+        } else {
+            window.scrollTo(0,0);
+        }
     };
 
     return (
@@ -82,7 +91,18 @@ const Footer = ({ setCurrentPage, setShowLogin, isAdmin }) => (
                 <div className="flex flex-col items-center sm:items-start gap-4">
                     <h4 className="font-bold text-gray-900 mb-1 uppercase tracking-widest text-[11px] md:text-xs">Navigate</h4>
                     {['Home', 'About', 'Events', 'Members'].map(page => (
-                        <button key={page} onClick={() => { setCurrentPage(page.toLowerCase()); window.scrollTo(0,0); }} className="hover:text-black transition-colors capitalize font-medium">{page}</button>
+                        <button key={page} onClick={() => { 
+                            const target = page.toLowerCase();
+                            setCurrentPage(target); 
+                            if (window.innerWidth < 768) {
+                                setTimeout(() => {
+                                    const el = document.getElementById(target);
+                                    if (el) window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+                                }, 50);
+                            } else {
+                                window.scrollTo(0,0); 
+                            }
+                        }} className="hover:text-black transition-colors capitalize font-medium">{page}</button>
                     ))}
                 </div>
 
@@ -591,14 +611,26 @@ export default function App() {
     }, []);
 
     const renderPage = () => {
-        switch (currentPage) {
-            case 'home': return <HomePage setCurrentPage={setCurrentPage} />;
-            case 'about': return <AboutPage />;
-            case 'events': return <EventsPage events={events} />;
-            case 'members': return <MembersPage members={members} />;
-            case 'admin': return <AdminPage members={members} setMembers={setMembers} events={events} setEvents={setEvents} isAdmin={isAdmin} setIsAdmin={setIsAdmin} setCurrentPage={setCurrentPage} />;
-            default: return <HomePage setCurrentPage={setCurrentPage} />;
+        if (currentPage === 'admin') {
+            return <AdminPage members={members} setMembers={setMembers} events={events} setEvents={setEvents} isAdmin={isAdmin} setIsAdmin={setIsAdmin} setCurrentPage={setCurrentPage} />;
         }
+
+        return (
+            <div className="w-full">
+                <div id="home" className={`block ${currentPage === 'home' ? 'md:block' : 'md:hidden'}`}>
+                    <HomePage setCurrentPage={setCurrentPage} />
+                </div>
+                <div id="about" className={`block ${currentPage === 'about' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
+                    <AboutPage />
+                </div>
+                <div id="members" className={`block ${currentPage === 'members' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
+                    <MembersPage members={members} />
+                </div>
+                <div id="events" className={`block ${currentPage === 'events' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
+                    <EventsPage events={events} />
+                </div>
+            </div>
+        );
     };
 
     const handleAdminAuth = () => {
