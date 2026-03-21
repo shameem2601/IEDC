@@ -115,7 +115,7 @@ const Footer = ({ setCurrentPage, setShowLogin, isAdmin }) => (
             </div>
         </div>
         
-        <div className="mt-12 pt-6 sm:pt-8 border-t border-gray-100 text-center text-xs text-gray-400 w-full relative z-10">
+        <div className="hidden md:block mt-12 pt-6 sm:pt-8 border-t border-gray-100 text-center text-xs text-gray-400 w-full relative z-10">
             <p>© 2025–2028 All Rights Reserved by MTM college, Veliyancode</p>
         </div>
     </footer>
@@ -184,8 +184,11 @@ const AboutPage = () => (
             <p>The Innovation and Entrepreneurship Development Centre (IEDC) of MTM Arts, Science and Commerce College, Veliyancode, is a dynamic initiative dedicated to nurturing a culture of innovation within the institution.</p>
             <p>The IEDC encourages technology-driven startup initiatives among students by providing essential guidance, resources, and mentorship. Through workshops, webinars, EnTalks, and various competitions, the centre helps students refine their ideas and develop them into successful entrepreneurial ventures.</p>
         </div>
-        <SignatureSvg />
-        <p className="mt-8 md:mt-10 text-xs md:text-sm text-gray-500">© 2024–2026<br />All Rights Reserved</p>
+        <div className="hidden md:block">
+            <SignatureSvg />
+        </div>
+        <div className="mt-12 md:mt-16">  <p className="mt-8 md:mt-10 text-xs md:text-sm text-gray-500">© 2024–2026<br />All Rights Reserved</p>
+        </div>
     </main>
 );
 
@@ -636,14 +639,14 @@ export default function App() {
                 <div id="home" className={`block ${currentPage === 'home' ? 'md:block' : 'md:hidden'}`}>
                     <HomePage setCurrentPage={setCurrentPage} />
                 </div>
-                <div id="about" className={`block ${currentPage === 'about' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
-                    <AboutPage />
-                </div>
                 <div id="members" className={`block ${currentPage === 'members' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
                     <MembersPage members={members} />
                 </div>
                 <div id="events" className={`block ${currentPage === 'events' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
                     <EventsPage events={events} />
+                </div>
+                <div id="about" className={`block ${currentPage === 'about' ? 'md:block' : 'md:hidden'} -mt-16 md:mt-0`}>
+                    <AboutPage />
                 </div>
             </div>
         );
