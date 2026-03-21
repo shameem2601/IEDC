@@ -114,6 +114,10 @@ const Footer = ({ setCurrentPage, setShowLogin, isAdmin }) => (
                 </div>
             </div>
         </div>
+        
+        <div className="mt-12 pt-6 sm:pt-8 border-t border-gray-100 text-center text-xs text-gray-400 w-full relative z-10">
+            <p>© 2025–2028 All Rights Reserved by MTM college, Veliyancode</p>
+        </div>
     </footer>
 );
 
@@ -175,7 +179,7 @@ const HomePage = ({ setCurrentPage }) => (
 const AboutPage = () => (
     <main className="max-w-[1000px] mx-auto pt-32 md:pt-48 px-4 md:px-6 text-left mb-20 md:mb-32">
         <RoaLogoSvg />
-        <h1 className="mt-8 md:mt-10 text-5xl md:text-6xl font-extrabold text-gray-950 leading-tight">IEDC <span className="text-gray-400">Incubator</span></h1>
+        <h1 className="mt-8 md:mt-10 text-5xl md:text-6xl font-extrabold text-gray-950 leading-tight">about <span className="text-gray-400">IEDC</span></h1>
         <div className="mt-8 md:mt-12 space-y-5 md:space-y-6 text-lg md:text-xl text-gray-800 leading-relaxed max-w-[800px]">
             <p>The Innovation and Entrepreneurship Development Centre (IEDC) of MTM Arts, Science and Commerce College, Veliyancode, is a dynamic initiative dedicated to nurturing a culture of innovation within the institution.</p>
             <p>The IEDC encourages technology-driven startup initiatives among students by providing essential guidance, resources, and mentorship. Through workshops, webinars, EnTalks, and various competitions, the centre helps students refine their ideas and develop them into successful entrepreneurial ventures.</p>
