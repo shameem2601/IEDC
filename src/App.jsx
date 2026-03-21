@@ -4,6 +4,41 @@ import { storage, db } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, doc } from 'firebase/firestore';
 import logoImg from './assets/logo.png';
+import Cropper from 'react-easy-crop';
+
+const createImage = (url) =>
+    new Promise((resolve, reject) => {
+        const image = new Image();
+        image.addEventListener('load', () => resolve(image));
+        image.addEventListener('error', (error) => reject(error));
+        image.setAttribute('crossOrigin', 'anonymous');
+        image.src = url;
+    });
+
+async function getCroppedImg(imageSrc, pixelCrop) {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+    );
+    return new Promise((resolve) => {
+        canvas.toBlob((file) => {
+            resolve(file);
+        }, 'image/jpeg');
+    });
+}
 
 // --- MAIN CONFIG & MOCK DATA ---
 const ADMIN_CREDENTIALS = { username: 'shameem', password: 'shameem123#' };
@@ -293,6 +328,27 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
     const [editingEvent, setEditingEvent] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadingGallery, setUploadingGallery] = useState(false);
+    
+    // Cropper State
+    const [cropImageSrc, setCropImageSrc] = useState(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+    const onFileChangeForCrop = async (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            let imageDataUrl = await new Promise((resolve) => {
+                let reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
+            setCropImageSrc({ url: imageDataUrl, file: file });
+            setZoom(1);
+            setCrop({ x: 0, y: 0 });
+            e.target.value = null; // reset input
+        }
+    };
 
     const handleGalleryUpload = async (e) => {
         const files = Array.from(e.target.files);
@@ -523,6 +579,61 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                 </section>
             )}
 
+            {/* Cropper Modal Overlay */}
+            {cropImageSrc && (
+                <div className="fixed inset-0 z-[60] bg-black/80 flex flex-col items-center justify-center p-4 sm:p-6">
+                    <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col h-[75vh]">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center shrink-0">
+                            <h3 className="font-bold text-xl flex items-center gap-3"><ImageIcon className="text-orange-500" /> Adjust Image Canvas</h3>
+                            <button onClick={() => setCropImageSrc(null)} className="p-2 hover:bg-gray-100 rounded-full transition"><X size={20} className="text-gray-500"/></button>
+                        </div>
+                        <div className="relative flex-1 bg-gray-900 w-full">
+                            <Cropper
+                                image={cropImageSrc.url}
+                                crop={crop}
+                                zoom={zoom}
+                                aspect={1}
+                                onCropChange={setCrop}
+                                onZoomChange={setZoom}
+                                onCropComplete={(_, croppedAreaPixels) => setCroppedAreaPixels(croppedAreaPixels)}
+                            />
+                        </div>
+                        <div className="p-6 bg-white space-y-6 shrink-0 border-t border-gray-100">
+                            <div className="flex items-center gap-4">
+                                <span className="font-bold text-xs uppercase tracking-widest text-gray-400">Zoom</span>
+                                <input
+                                    type="range" value={zoom} min={1} max={3} step={0.1}
+                                    onChange={(e) => setZoom(e.target.value)}
+                                    className="w-full h-2 bg-gray-100 rounded-full appearance-none outline-none accent-black cursor-pointer"
+                                />
+                            </div>
+                            <button 
+                                disabled={uploading}
+                                onClick={async () => {
+                                    setUploading(true);
+                                    try {
+                                        const croppedBlob = await getCroppedImg(cropImageSrc.url, croppedAreaPixels);
+                                        croppedBlob.name = cropImageSrc.file.name; 
+                                        const url = await handleFileUpload(croppedBlob, 'members');
+                                        if (url) {
+                                            if (editingMember) setEditingMember({ ...editingMember, photoUrl: url, img: null });
+                                            setCropImageSrc(null);
+                                        }
+                                    } catch (err) {
+                                        console.error('Crop failed', err);
+                                    } finally {
+                                        setUploading(false);
+                                    }
+                                }}
+                                className="w-full p-4 rounded-xl font-bold text-white bg-black hover:bg-gray-800 transition flex justify-center items-center gap-2"
+                            >
+                                {uploading ? <Loader2 className="animate-spin" /> : "Confirm Alignment & Upload"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Member Modal */}
             {editingMember && (
                 <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" onClick={() => setEditingMember(null)}>
@@ -551,12 +662,9 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                                     </div>
                                     <label className="flex-1 cursor-pointer">
                                         <div className="flex items-center gap-2 justify-center py-4 bg-white border border-dashed border-gray-200 rounded-xl hover:border-black transition text-sm font-bold text-gray-500">
-                                            <Upload size={16} /> {uploading ? "Uploading..." : "Click to select photo"}
+                                            <Upload size={16} /> {uploading ? "Uploading..." : "Click to align photo"}
                                         </div>
-                                        <input type="file" className="hidden" accept="image/*" disabled={uploading || !storage} onChange={async (e) => {
-                                            const url = await handleFileUpload(e.target.files[0], 'members');
-                                            if (url) setEditingMember({ ...editingMember, photoUrl: url, img: null });
-                                        }} />
+                                        <input type="file" className="hidden" accept="image/*" disabled={uploading || !storage} onChange={onFileChangeForCrop} />
                                     </label>
                                 </div>
                             </label>
