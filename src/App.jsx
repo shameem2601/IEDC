@@ -604,10 +604,32 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                                     </label>
                                 </div>
                             </label>
+
+                            <label className="block pt-2">
+                                <span className="text-sm font-bold text-gray-400 uppercase tracking-widest block mb-2 flex justify-between items-center">
+                                    Event Gallery
+                                    <span className="text-xs font-normal bg-gray-100 px-2 py-1 rounded text-gray-500">Optional</span>
+                                </span>
+                                <label className="flex items-center justify-center gap-3 w-full p-6 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-black hover:bg-gray-50 transition">
+                                    {uploadingGallery ? <Loader2 className="animate-spin text-gray-400" /> : <Plus className="text-gray-400" />}
+                                    <span className="text-gray-600 font-medium">{uploadingGallery ? 'Uploading...' : 'Add Gallery Photos'}</span>
+                                    <input type="file" multiple accept="image/*" onChange={handleGalleryUpload} className="hidden" disabled={uploadingGallery || uploading} />
+                                </label>
+                                {editingEvent.galleryUrls && editingEvent.galleryUrls.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        {editingEvent.galleryUrls.map((url, i) => (
+                                            <div key={i} className="relative w-16 h-16 rounded-xl overflow-hidden group shadow-sm">
+                                                <img src={url} alt="Gallery item" className="w-full h-full object-cover" />
+                                                <button onClick={() => setEditingEvent({...editingEvent, galleryUrls: editingEvent.galleryUrls.filter((_, index) => index !== i)})} className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><X size={16} /></button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </label>
                         </div>
                         <div className="flex gap-4 mt-10">
                             <button onClick={() => setEditingEvent(null)} className="flex-1 p-5 rounded-2xl font-bold bg-gray-100 hover:bg-gray-200 transition">Cancel</button>
-                            <button onClick={() => handleSaveEvent(editingEvent)} disabled={uploading} className="flex-1 p-5 rounded-2xl font-bold text-white bg-black hover:bg-gray-800 transition disabled:opacity-50">Publish Event</button>
+                            <button onClick={() => handleSaveEvent(editingEvent)} disabled={uploading || uploadingGallery} className="flex-1 p-5 rounded-2xl font-bold text-white bg-black hover:bg-gray-800 transition disabled:opacity-50">Publish Event</button>
                         </div>
                     </div>
                 </div>
