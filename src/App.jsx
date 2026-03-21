@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Linkedin, Instagram, Twitter, Trash2, Edit2, Plus, Upload, Loader2, Image as ImageIcon, Rocket, Zap, ChevronDown, Menu, X } from 'lucide-react';
 import { storage, db } from './firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, doc } from 'firebase/firestore';
 import logoImg from './assets/logo.png';
 
@@ -377,12 +377,24 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
     const handleDelete = async (id, collectionName) => {
         deletedMockIds.add(id);
         
-        if (collectionName === "members") setMembers(prev => prev.filter(m => m.id !== id));
-        if (collectionName === "events") setEvents(prev => prev.filter(e => e.id !== id));
+        let itemToDelete = null;
+        if (collectionName === "members") {
+            itemToDelete = members.find(m => m.id === id);
+            setMembers(prev => prev.filter(m => m.id !== id));
+        } else if (collectionName === "events") {
+            itemToDelete = events.find(e => e.id === id);
+            setEvents(prev => prev.filter(e => e.id !== id));
+        }
 
         if (!db) return;
         try {
             await deleteDoc(doc(db, collectionName, id));
+            
+            const fileUrl = itemToDelete?.photoUrl || itemToDelete?.imageUrl;
+            if (fileUrl && storage && fileUrl.includes('firebasestorage.googleapis.com')) {
+                const fileRef = ref(storage, fileUrl);
+                await deleteObject(fileRef).catch(e => console.log('Storage deletion silent fail:', e));
+            }
         } catch (error) {
             console.error("Delete failed:", error);
         }
