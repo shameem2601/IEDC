@@ -275,7 +275,9 @@ const MembersPage = ({ members }) => {
             
             <div className="flex flex-col gap-16 md:gap-24 items-center">
                 {baseRoles.map((role) => {
-                    const roleMembers = members.filter(m => m.role === role);
+                    const roleMembers = [...members]
+                        .filter(m => m.role === role)
+                        .sort((a, b) => (a.order ?? 999999999) - (b.order ?? 999999999));
                     if (roleMembers.length === 0) return null;
                     
                     let sizeClass = "w-24 h-24 text-4xl";
