@@ -186,8 +186,7 @@ const AboutPage = () => (
         </div>
         <div className="hidden md:block">
             <SignatureSvg />
-        </div>
-        <div className="mt-12 md:mt-16">  <p className="mt-8 md:mt-10 text-xs md:text-sm text-gray-500">© 2024–2026<br />All Rights Reserved</p>
+            <p className="mt-8 md:mt-10 text-xs md:text-sm text-gray-500">© 2024–2026<br />All Rights Reserved</p>
         </div>
     </main>
 );
