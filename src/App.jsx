@@ -6,7 +6,7 @@ import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, doc } from
 import logoImg from './assets/logo.png';
 
 // --- MAIN CONFIG & MOCK DATA ---
-const ADMIN_CREDENTIALS = { username: 'admin', password: 'password' };
+const ADMIN_CREDENTIALS = { username: 'shameem', password: 'shameem123#' };
 const baseRoles = ["Nodal Officers", "Executive Committee", "Core Team", "Volunteers", "Unassigned"];
 
 const initialMembers = [];
@@ -373,29 +373,29 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
 
     return (
         <main className="max-w-[1400px] mx-auto pt-48 px-6 text-left mb-32">
-            <div className="flex items-center justify-between mb-12">
-                <h1 className="text-5xl font-extrabold text-gray-950 flex items-center gap-4">
-                    <Lock size={32} className="text-orange-500" /> Admin Panel
-                </h1>
-                <div className="flex gap-4">
-                    <div className="bg-gray-100 p-1 rounded-full flex">
-                        <button onClick={() => setActiveTab('members')} className={`px-6 py-2 rounded-full font-bold text-sm transition ${activeTab === 'members' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-800'}`}>Members</button>
-                        <button onClick={() => setActiveTab('events')} className={`px-6 py-2 rounded-full font-bold text-sm transition ${activeTab === 'events' ? 'bg-white text-black shadow-md' : 'text-gray-500 hover:text-gray-800'}`}>Events</button>
-                    </div>
-                    <button onClick={handleExit} className="px-8 py-3 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors font-bold">Exit Panel</button>
+            {/* Header/Nav inside Admin */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-6 bg-white/80 p-6 md:p-8 rounded-3xl border border-white/20 shadow-xl backdrop-blur-sm">
+                <div>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-950 flex items-center gap-4"><Lock className="text-orange-500" /> <span className="hidden sm:inline">Admin</span> Dashboard</h1>
+                    <p className="mt-2 text-sm sm:text-base text-gray-500 font-medium">Manage members and events securely.</p>
+                </div>
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                    <button onClick={() => setActiveTab('members')} className={`px-4 sm:px-6 py-3 rounded-xl sm:rounded-full font-bold transition text-sm sm:text-base ${activeTab === 'members' ? 'bg-black text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Members</button>
+                    <button onClick={() => setActiveTab('events')} className={`px-4 sm:px-6 py-3 rounded-xl sm:rounded-full font-bold transition text-sm sm:text-base ${activeTab === 'events' ? 'bg-black text-white shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Events</button>
+                    <button onClick={handleExit} className="col-span-2 sm:col-span-1 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full font-bold bg-red-50 text-red-600 hover:bg-red-100 transition text-sm sm:text-base sm:ml-4 text-center">Exit Panel</button>
                 </div>
             </div>
 
             {activeTab === 'members' ? (
-                <section className="bg-white/80 rounded-3xl p-10 shadow-xl border border-white/20 backdrop-blur-sm">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900">Member Directory</h2>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <label className="flex items-center gap-2 px-6 py-3 rounded-full text-black bg-gray-100 hover:bg-gray-200 font-bold transition cursor-pointer">
+                <section className="bg-white/80 rounded-3xl p-6 sm:p-10 shadow-xl border border-white/20 backdrop-blur-sm">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 w-full">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Member Directory</h2>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                            <label className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-black bg-gray-100 hover:bg-gray-200 font-bold transition cursor-pointer text-sm sm:text-base w-full sm:w-auto">
                                 <Upload size={16} /> {uploading ? "Uploading..." : "Bulk Add"}
                                 <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleBulkUpload(e, "members")} disabled={uploading} />
                             </label>
-                            <button onClick={() => setEditingMember({ name: '', role: baseRoles[3], position: '', photoUrl: '' })} className="flex items-center gap-2 px-6 py-3 rounded-full text-white bg-black hover:bg-gray-800 font-bold transition"> <Plus size={16} /> Single Form </button>
+                            <button onClick={() => setEditingMember({ name: '', role: baseRoles[3], position: '', photoUrl: '' })} className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-white bg-black hover:bg-gray-800 font-bold transition text-sm sm:text-base w-full sm:w-auto"> <Plus size={16} /> Single Form </button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
@@ -417,15 +417,15 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                     </div>
                 </section>
             ) : (
-                <section className="bg-white/80 rounded-3xl p-10 shadow-xl border border-white/20 backdrop-blur-sm">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900">Events Management</h2>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <label className="flex items-center gap-2 px-6 py-3 rounded-full text-black bg-gray-100 hover:bg-gray-200 font-bold transition cursor-pointer">
+                <section className="bg-white/80 rounded-3xl p-6 sm:p-10 shadow-xl border border-white/20 backdrop-blur-sm">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 w-full">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Events Management</h2>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                            <label className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-black bg-gray-100 hover:bg-gray-200 font-bold transition cursor-pointer text-sm sm:text-base w-full sm:w-auto">
                                 <Upload size={16} /> {uploading ? "Uploading..." : "Bulk Add"}
                                 <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleBulkUpload(e, "events")} disabled={uploading} />
                             </label>
-                            <button onClick={() => setEditingEvent({ title: '', date: '', desc: '', imageUrl: '' })} className="flex items-center gap-2 px-6 py-3 rounded-full text-white bg-black hover:bg-gray-800 font-bold transition"> <Plus size={16} /> New Event </button>
+                            <button onClick={() => setEditingEvent({ title: '', date: '', desc: '', imageUrl: '' })} className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-white bg-black hover:bg-gray-800 font-bold transition text-sm sm:text-base w-full sm:w-auto"> <Plus size={16} /> New Event </button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
@@ -450,10 +450,10 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
 
             {/* Member Modal */}
             {editingMember && (
-                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-6" onClick={() => setEditingMember(null)}>
-                    <div className="bg-white rounded-3xl p-10 w-full max-w-xl shadow-2xl border border-gray-100" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-3xl font-black mb-8">{editingMember.id ? 'Edit Member Profile' : 'Upload New Member'}</h3>
-                        <div className="space-y-6">
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" onClick={() => setEditingMember(null)}>
+                    <div className="bg-white rounded-3xl p-6 sm:p-10 w-full max-w-xl shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8">{editingMember.id ? 'Edit Member Profile' : 'Upload New Member'}</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             <label className="block">
                                 <span className="text-sm font-bold text-gray-400 uppercase tracking-widest block mb-2">Member Name</span>
                                 <input type="text" value={editingMember.name} onChange={e => setEditingMember({ ...editingMember, name: e.target.value })} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black font-medium" />
@@ -496,10 +496,10 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
 
             {/* Event Modal */}
             {editingEvent && (
-                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-6" onClick={() => setEditingEvent(null)}>
-                    <div className="bg-white rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-gray-100" onClick={e => e.stopPropagation()}>
-                        <h3 className="text-3xl font-black mb-8">{editingEvent.id ? 'Edit Event Details' : 'Curate New Event'}</h3>
-                        <div className="space-y-6">
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-6" onClick={() => setEditingEvent(null)}>
+                    <div className="bg-white rounded-3xl p-6 sm:p-10 w-full max-w-xl shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                        <h3 className="text-2xl sm:text-3xl font-black mb-6 sm:mb-8">{editingEvent.id ? 'Edit Event Details' : 'Design New Event'}</h3>
+                        <div className="space-y-4 sm:space-y-6">
                             <label className="block">
                                 <span className="text-sm font-bold text-gray-400 uppercase tracking-widest block mb-2">Event Title</span>
                                 <input type="text" value={editingEvent.title} onChange={e => setEditingEvent({ ...editingEvent, title: e.target.value })} className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-black font-medium" />
