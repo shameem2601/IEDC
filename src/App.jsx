@@ -216,6 +216,13 @@ const EventsPage = ({ events }) => {
                             <div className={`grid transition-all duration-300 ease-in-out ${expandedId === event.id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
                                 <div className="overflow-hidden">
                                     <p className="text-gray-700 leading-relaxed text-base pt-4 border-t border-gray-100">{event.desc}</p>
+                                    {event.galleryUrls && event.galleryUrls.length > 0 && (
+                                        <div className="mt-6 pt-6 border-t border-gray-50 flex overflow-x-auto gap-3 pb-2 snap-x">
+                                            {event.galleryUrls.map((gUrl, idx) => (
+                                                <img key={idx} src={gUrl} alt="Event gallery" className="w-32 h-32 object-cover rounded-2xl flex-shrink-0 snap-center shadow-md border border-gray-100" />
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -285,8 +292,31 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
     const [editingMember, setEditingMember] = useState(null);
     const [editingEvent, setEditingEvent] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [uploadingGallery, setUploadingGallery] = useState(false);
 
-    const handleFileUpload = async (file, folder) => {
+    const handleGalleryUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length || !storage) return;
+        setUploadingGallery(true);
+        const uploadPromises = files.map(async (file) => {
+            try {
+                const fileRef = ref(storage, `events/gallery/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`);
+                await uploadBytes(fileRef, file);
+                return await getDownloadURL(fileRef);
+            } catch (error) {
+                console.error("Gallery upload failed:", error);
+                return null;
+            }
+        });
+        const urls = (await Promise.all(uploadPromises)).filter(url => url !== null);
+        if (urls.length > 0) {
+            setEditingEvent(prev => ({ ...prev, galleryUrls: [...(prev.galleryUrls || []), ...urls] }));
+        }
+        setUploadingGallery(false);
+        e.target.value = null;
+    };
+
+    const handleFileUpload = async (file, folder, fieldName) => {
         if (!file || !storage) {
             alert("Storage service is unavailable.");
             return null;
@@ -363,7 +393,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                     if (collectionName === "members") {
                         await addDoc(collection(db, "members"), { name: 'Bulk Add Member', role: baseRoles[3], position: '', photoUrl: url, img: null });
                     } else if (collectionName === "events") {
-                        await addDoc(collection(db, "events"), { title: 'Bulk Event', date: '', desc: '', imageUrl: url });
+                        await addDoc(collection(db, "events"), { title: 'Bulk Event', date: '', desc: '', imageUrl: url, galleryUrls: [] });
                     }
                 }
             } catch (error) {
@@ -396,6 +426,13 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
             if (fileUrl && storage && fileUrl.includes('firebasestorage.googleapis.com')) {
                 const fileRef = ref(storage, fileUrl);
                 await deleteObject(fileRef).catch(e => console.log('Storage deletion silent fail:', e));
+            }
+            if (itemToDelete?.galleryUrls && itemToDelete.galleryUrls.length > 0 && storage) {
+                for (const url of itemToDelete.galleryUrls) {
+                    if (url.includes('firebasestorage.googleapis.com')) {
+                        await deleteObject(ref(storage, url)).catch(e => console.log('Gallery cleanup fail:', e));
+                    }
+                }
             }
         } catch (error) {
             console.error("Delete failed:", error);
@@ -463,7 +500,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                                 <Upload size={16} /> {uploading ? "Uploading..." : "Bulk Add"}
                                 <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleBulkUpload(e, "events")} disabled={uploading} />
                             </label>
-                            <button onClick={() => setEditingEvent({ title: '', date: '', desc: '', imageUrl: '' })} className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-white bg-black hover:bg-gray-800 font-bold transition text-sm sm:text-base w-full sm:w-auto"> <Plus size={16} /> New Event </button>
+                            <button onClick={() => setEditingEvent({ title: '', date: '', desc: '', imageUrl: '', galleryUrls: [] })} className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-white bg-black hover:bg-gray-800 font-bold transition text-sm sm:text-base w-full sm:w-auto"> <Plus size={16} /> New Event </button>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 gap-4">
