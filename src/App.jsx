@@ -108,8 +108,8 @@ const Footer = ({ setCurrentPage, setShowLogin, isAdmin }) => (
 
                 <div className="flex flex-col items-center sm:items-start gap-4">
                     <h4 className="font-bold text-gray-900 mb-1 uppercase tracking-widest text-[11px] md:text-xs">Connect</h4>
-                    {[{ name: 'Instagram', icon: Instagram }, { name: 'LinkedIn', icon: Linkedin }, { name: 'X', icon: Twitter }].map(link => (
-                        <a key={link.name} href="#" className="flex items-center gap-2 hover:text-black transition-colors font-medium"> <link.icon size={16} /> {link.name}</a>
+                    {[{ name: 'Instagram', url: 'https://www.instagram.com/iedcmtm/', icon: Instagram }, { name: 'LinkedIn', url: 'https://www.linkedin.com/in/iedc-mtm-aa58a03b5', icon: Linkedin }, { name: 'X', url: 'https://x.com/IedcMtm', icon: Twitter }].map(link => (
+                        <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-black transition-colors font-medium"> <link.icon size={16} /> {link.name}</a>
                     ))}
                 </div>
             </div>
