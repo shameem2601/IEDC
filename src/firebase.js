@@ -1,6 +1,7 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB10kzJWld9P9f378suJChtyYMDeHNAAL0",
@@ -12,12 +13,22 @@ const firebaseConfig = {
   measurementId: "G-TVHVYDE55B"
 };
 
-const app = initializeApp(firebaseConfig);
-export let analytics = null;
-isSupported().then(supported => {
-  if (supported) {
-    analytics = getAnalytics(app);
-  }
-});
+let app, db, storage, analytics = null;
 
-export const storage = getStorage(app);
+try {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  db = getFirestore(app);
+  storage = getStorage(app);
+  
+  isSupported().then(supported => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+} catch (error) {
+  console.error("Critical Firebase Initialization Error! Running in offline/mock mode.", error);
+  db = null;
+  storage = null;
+}
+
+export { db, storage, analytics };
