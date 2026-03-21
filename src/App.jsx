@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Linkedin, Instagram, Twitter, Trash2, Edit2, Plus, Upload, Loader2, Image as ImageIcon, Rocket, Zap, ChevronDown, Menu, X } from 'lucide-react';
+import { Lock, Linkedin, Instagram, Twitter, Trash2, Edit2, Plus, Upload, Loader2, Image as ImageIcon, Rocket, Zap, ChevronDown, ChevronUp, Menu, X } from 'lucide-react';
 import { storage, db } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, query, doc } from 'firebase/firestore';
@@ -392,19 +392,44 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
         }
     };
 
+    const moveMember = async (currentIndex, targetIndex, roleMembers) => {
+        if (!db || targetIndex < 0 || targetIndex >= roleMembers.length) return;
+        let updatedMembers = [...roleMembers];
+        const updates = [];
+        for (let i = 0; i < updatedMembers.length; i++) {
+            if (updatedMembers[i].order === undefined) {
+                updatedMembers[i].order = Date.now() + (i * 1000);
+                updates.push(updateDoc(doc(db, "members", updatedMembers[i].id), { order: updatedMembers[i].order }));
+            }
+        }
+        if (updates.length > 0) await Promise.all(updates);
+
+        const memberA = updatedMembers[currentIndex];
+        const memberB = updatedMembers[targetIndex];
+        const temp = memberA.order;
+        memberA.order = memberB.order;
+        memberB.order = temp;
+
+        try {
+            await Promise.all([
+                updateDoc(doc(db, "members", memberA.id), { order: memberA.order }),
+                updateDoc(doc(db, "members", memberB.id), { order: memberB.order })
+            ]);
+        } catch (error) {
+            console.error("Order update failed:", error);
+        }
+    };
+
     const handleSaveMember = async (member) => {
         if (!db) {
             alert("Firestore is currently unavailable. Changes will not be saved.");
             return;
         }
         try {
-            const docData = { ...member };
-            delete docData.id;
-
-            if (member.id && typeof member.id === 'string') {
-                await updateDoc(doc(db, "members", member.id), docData);
+            if (member.id) {
+                await updateDoc(doc(db, "members", member.id), { name: member.name, role: member.role, position: member.position, photoUrl: member.photoUrl });
             } else {
-                await addDoc(collection(db, "members"), docData);
+                await addDoc(collection(db, "members"), { name: member.name, role: member.role, position: member.position, photoUrl: member.photoUrl, img: null, order: Date.now() });
             }
             setEditingMember(null);
         } catch (error) {
@@ -439,7 +464,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
         if (!files.length || !storage || !db) return;
         
         setUploading(true);
-        const uploadPromises = files.map(async (file) => {
+        const uploadPromises = files.map(async (file, idx) => {
             try {
                 const fileRef = ref(storage, `${collectionName}/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`);
                 await uploadBytes(fileRef, file);
@@ -447,7 +472,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                 
                 if (url) {
                     if (collectionName === "members") {
-                        await addDoc(collection(db, "members"), { name: 'Bulk Add Member', role: baseRoles[3], position: '', photoUrl: url, img: null });
+                        await addDoc(collection(db, "members"), { name: 'Bulk Add Member', role: baseRoles[3], position: '', photoUrl: url, img: null, order: Date.now() + idx });
                     } else if (collectionName === "events") {
                         await addDoc(collection(db, "events"), { title: 'Bulk Event', date: '', desc: '', imageUrl: url, galleryUrls: [] });
                     }
@@ -470,7 +495,7 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
             itemToDelete = members.find(m => m.id === id);
             setMembers(prev => prev.filter(m => m.id !== id));
         } else if (collectionName === "events") {
-            itemToDelete = events.find(e => e.id === id);
+            itemToDelete = events.find(e => e.id !== id);
             setEvents(prev => prev.filter(e => e.id !== id));
         }
 
@@ -529,22 +554,41 @@ const AdminPage = ({ members, setMembers, events, setEvents, isAdmin, setIsAdmin
                             <button onClick={() => setEditingMember({ name: '', role: baseRoles[3], position: '', photoUrl: '' })} className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl sm:rounded-full text-white bg-black hover:bg-gray-800 font-bold transition text-sm sm:text-base w-full sm:w-auto"> <Plus size={16} /> Single Form </button>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                        {members.map((member) => (
-                            <div key={member.id} className="flex items-center gap-6 p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition group">
-                                <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
-                                    {member.photoUrl ? <img src={member.photoUrl} className="w-full h-full object-cover" /> : <div className="text-3xl">{member.img || '👤'}</div>}
+                    <div className="grid grid-cols-1 gap-6">
+                        {baseRoles.map(role => {
+                            const roleMembers = [...members]
+                                .filter(m => m.role === role)
+                                .sort((a, b) => (a.order ?? 999999999) - (b.order ?? 999999999));
+                                
+                            if (roleMembers.length === 0) return null;
+                            
+                            return (
+                                <div key={role} className="bg-gray-50/50 p-4 sm:p-6 rounded-3xl border border-gray-100">
+                                    <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 pl-2">{role}</h4>
+                                    <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                                        {roleMembers.map((member, index) => (
+                                            <div key={member.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 p-4 bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition group">
+                                                <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100 shrink-0">
+                                                    {member.photoUrl ? <img src={member.photoUrl} className="w-full h-full object-cover" /> : <div className="text-3xl">{member.img || '👤'}</div>}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="text-lg sm:text-xl font-bold text-gray-950">{member.name}</h4>
+                                                    <p className="text-xs sm:text-sm font-medium text-gray-500">{member.position}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
+                                                    <div className="flex gap-1 mr-2 border-r border-gray-100 pr-2">
+                                                        <button disabled={index === 0} onClick={() => moveMember(index, index - 1, roleMembers)} className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-gray-200 hover:text-black transition disabled:opacity-30"> <ChevronUp size={16} /> </button>
+                                                        <button disabled={index === roleMembers.length - 1} onClick={() => moveMember(index, index + 1, roleMembers)} className="p-2 rounded-lg bg-gray-50 text-gray-400 hover:bg-gray-200 hover:text-black transition disabled:opacity-30"> <ChevronDown size={16} /> </button>
+                                                    </div>
+                                                    <button onClick={() => setEditingMember(member)} className="p-2 sm:p-3 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-200 transition"> <Edit2 size={16} /> </button>
+                                                    <button onClick={() => handleDelete(member.id, "members")} className="p-2 sm:p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition"> <Trash2 size={16} /> </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h4 className="text-xl font-bold text-gray-950">{member.name}</h4>
-                                    <p className="text-sm font-medium text-gray-500">{member.position} <span className="mx-2 opacity-30">|</span> <span className="text-orange-600 font-bold">{member.role}</span></p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={() => setEditingMember(member)} className="p-3 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-200 transition"> <Edit2 size={18} /> </button>
-                                    <button onClick={() => handleDelete(member.id, "members")} className="p-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition"> <Trash2 size={18} /> </button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
             ) : (
